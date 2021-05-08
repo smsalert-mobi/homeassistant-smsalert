@@ -1,0 +1,7 @@
+{
+  "domain": "smsalert",
+  "name": "SmsAplert SMS",
+  "documentation": "https://smsalert.mobi/apidocs",
+  "codeowners": [],
+  "version": "1.0.0"
+}
