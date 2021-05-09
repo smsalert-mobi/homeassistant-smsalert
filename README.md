@@ -9,6 +9,13 @@ You can get up to 20 SMS for free per month.
 
 For more messages consider upgrading.
 
+# Install via HACS (recommended)
+
+Go to HACS -> custom repository (upper right corner) -> enter this repository URL https://github.com/axwell/homeassistant-smsalert -> ADD
+
+Click on "SMS Alert Notifications" -> Install this repository in HACS
+
+
 # Install manually
 
 Clone or copy the repository and copy the folder 'homeassistant-smsalert/custom_component/smsalert' into '/custom_components'
