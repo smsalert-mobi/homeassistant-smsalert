@@ -4,6 +4,6 @@
   "domains": ["notify"],
   "homeassistant": "2020.12.1",
   "persistent_directory": "userfiles",
-  "render_readme": true
+  "render_readme": true,
   "iot_class": ["Assumed State", "Cloud Push"]
 }
