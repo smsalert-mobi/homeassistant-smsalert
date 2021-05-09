@@ -8,3 +8,25 @@ In order to use this integration you nee to create an account on https://smsaler
 You can get up to 20 SMS for free per month.
 
 For more messages consider upgrading.
+
+# Install manually
+
+Clone or copy the repository and copy the folder 'homeassistant-smsalert/custom_component/smsalert' into '/custom_components'
+
+# Configuration
+
+Edit you home assistant configuration.yml and add:
+
+```yaml
+notify:
+  - platform: smsalert_mobi
+    name: SMSAlert
+    username: your_smsalert_username
+    api_key: your_smsalert_token
+    recipient: +40XXXXXXXXX
+```
+Restart home assistant
+
+# Automations
+
+Call service notify.smsalert_mobi and enter desired message.
