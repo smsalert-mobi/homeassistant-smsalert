@@ -1,5 +1,5 @@
 {
-  "domain": "smsalert_mobi",
+  "domain": "smsalert",
   "name": "SMS Alert Notifications",
   "documentation": "https://smsalert.mobi/apidocs",
   "dependencies" : [],
