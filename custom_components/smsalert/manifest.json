@@ -1,7 +1,9 @@
 {
-  "domain": "smsalert",
-  "name": "SmsAplert SMS",
+  "domain": "smsalert_mobi",
+  "name": "SMS Alert Notifications",
   "documentation": "https://smsalert.mobi/apidocs",
-  "codeowners": [],
+  "dependencies" : [],
+  "codeowners": ["@axwell"],
+  "requirements": [],
   "version": "1.0.0"
 }
