@@ -36,4 +36,4 @@ Restart home assistant
 
 # Automations
 
-Call service notify.smsalert_mobi and enter desired message.
+Call service notify.smsalert and enter desired message.
