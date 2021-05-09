@@ -26,7 +26,7 @@ Edit you home assistant configuration.yml and add:
 
 ```yaml
 notify:
-  - platform: smsalert_mobi
+  - platform: smsalert
     name: SMSAlert
     username: your_smsalert_username
     api_key: your_smsalert_token
