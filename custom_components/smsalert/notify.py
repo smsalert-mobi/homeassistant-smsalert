@@ -1,4 +1,5 @@
 """SmsAlert platform for notify component."""
+from http import HTTPStatus
 import json
 import logging
 
@@ -13,7 +14,6 @@ from homeassistant.const import (
     CONF_SENDER,
     CONF_USERNAME,
     CONTENT_TYPE_JSON,
-    HTTP_OK,
 )
 import homeassistant.helpers.config_validation as cv
 
@@ -72,7 +72,7 @@ class SmsAlertNotificationService(BaseNotificationService):
             timeout=TIMEOUT,
             data=ploads
         )
-        if resp.status_code == HTTP_OK:
+        if resp.status_code == HTTPStatus.OK:
             return
 
         obj = json.loads(resp.text)
