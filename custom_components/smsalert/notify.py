@@ -32,7 +32,10 @@ async def async_setup_entry(
         name=entry.title or DEFAULT_NAME,
         username=data[CONF_USERNAME],
         api_key=data[CONF_API_KEY],
-        cleanup_utf8=opts.get(CONF_CLEANUP_UTF8, DEFAULT_CLEANUP_UTF8),
+        cleanup_utf8 = opts.get(
+            CONF_CLEANUP_UTF8,
+            data.get(CONF_CLEANUP_UTF8, DEFAULT_CLEANUP_UTF8),
+        ),
     )
     async_add_entities([entity], update_before_add=False)
 

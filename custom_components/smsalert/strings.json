@@ -8,7 +8,7 @@
         "data": {
           "username": "Username",
           "api_key": "API key",
-          "cleanup_utf8": "Cleanup UTF-8 (replace special diacritics if needed)"
+          "cleanup_utf8": "Cleanup UTF-8"
         }
       }
     }
@@ -18,7 +18,7 @@
       "init": {
         "title": "SMSAlert options",
         "data": {
-          "cleanup_utf8": "Cleanup UTF-8 (replace special diacritics if needed)"
+          "cleanup_utf8": "Cleanup UTF-8"
         }
       }
     }

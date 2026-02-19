@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.core import callback
 
@@ -19,8 +18,6 @@ class SmsAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
-        errors = {}
-
         if user_input is not None:
             username = user_input[CONF_USERNAME].strip()
             api_key = user_input[CONF_API_KEY].strip()
@@ -29,20 +26,15 @@ class SmsAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(f"{DOMAIN}:{username}")
             self._abort_if_unique_id_configured()
 
-            # Store only credentials in entry.data
-            entry = self.async_create_entry(
+            # Put cleanup_utf8 in data (safe, and avoids update_entry in flow)
+            return self.async_create_entry(
                 title=DEFAULT_NAME,
                 data={
                     CONF_USERNAME: username,
                     CONF_API_KEY: api_key,
+                    CONF_CLEANUP_UTF8: cleanup_utf8,
                 },
             )
-
-            # Put cleanup option in entry.options (so it’s editable without reauth)
-            self.hass.config_entries.async_update_entry(
-                entry, options={CONF_CLEANUP_UTF8: cleanup_utf8}
-            )
-            return entry
 
         schema = vol.Schema(
             {
@@ -51,8 +43,7 @@ class SmsAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_CLEANUP_UTF8, default=DEFAULT_CLEANUP_UTF8): bool,
             }
         )
-
-        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
+        return self.async_show_form(step_id="user", data_schema=schema)
 
     @staticmethod
     @callback
@@ -68,18 +59,13 @@ class SmsAlertOptionsFlow(config_entries.OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(
                 title="",
-                data={
-                    CONF_CLEANUP_UTF8: bool(
-                        user_input.get(CONF_CLEANUP_UTF8, DEFAULT_CLEANUP_UTF8)
-                    )
-                },
+                data={CONF_CLEANUP_UTF8: bool(user_input.get(CONF_CLEANUP_UTF8, DEFAULT_CLEANUP_UTF8))},
             )
 
-        cur_cleanup = self.entry.options.get(CONF_CLEANUP_UTF8, DEFAULT_CLEANUP_UTF8)
-
-        schema = vol.Schema(
-            {
-                vol.Optional(CONF_CLEANUP_UTF8, default=cur_cleanup): bool,
-            }
+        cur_cleanup = self.entry.options.get(
+            CONF_CLEANUP_UTF8,
+            self.entry.data.get(CONF_CLEANUP_UTF8, DEFAULT_CLEANUP_UTF8),
         )
+
+        schema = vol.Schema({vol.Optional(CONF_CLEANUP_UTF8, default=cur_cleanup): bool})
         return self.async_show_form(step_id="init", data_schema=schema)
