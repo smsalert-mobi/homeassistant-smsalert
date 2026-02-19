@@ -7,7 +7,7 @@
   "config_flow": true,
   "integration_type": "service",
   "iot_class": "cloud_push",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "requirements": [],
   "dependencies": []
 }
