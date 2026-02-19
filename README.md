@@ -1,26 +1,41 @@
-# homeassistant-smsalert
+# SMSAlert Home Assistant Integration
 
-This integration allows you to send SMS messages from you home assistant https://www.home-assistant.io/ instance.
-Currently this is available only for users in Romania.
+Send SMS messages via **SMSAlert** from Home Assistant using a clean, UI-friendly service.
 
-In order to use this integration you nee to create an account on https://smsalert.mobi/ and get you security token from settings page.
+## Features
+- UI setup (Config Flow)
+- Uses SMSAlert API v2: `POST /api/v2/message/send`
+- Global `cleanupUtf8` option (editable in UI)
+- Service with full UI fields: `smsalert.send`
 
+## Install (HACS)
+1. Add this repository as a custom repository in HACS (category: Integration)
+2. Install
+3. Restart Home Assistant
+4. Settings → Devices & Services → Add Integration → **SMSAlert**
 
-# Install via HACS (recommended)
+## Usage
 
-Go to HACS -> custom repository (upper right corner) -> enter this repository URL https://github.com/smsalert-mobi/homeassistant-smsalert -> ADD
+### Send SMS from an automation
+```yaml
+action:
+  - service: smsalert.send
+    data:
+      phone_number: "+40720762291"
+      message: "Hello from Home Assistant"
+```
 
-Click on "SMS Alert Notifications" -> Install this repository in HACS
+### Override cleanupUtf8 per call (optional)
+```yaml
+action:
+  - service: smsalert.send
+    data:
+      phone_number: "+40720762291"
+      message: "Diacritics test: ăâîșț"
+      cleanupUtf8: false
+```
 
+## Notes
+- Phone number is required per call (no stored recipients).
+- `cleanupUtf8` default is configured from the integration UI (Options).
 
-# Install manually
-
-Clone or copy the repository and copy the folder 'homeassistant-smsalert/custom_component/smsalert' into '/custom_components'
-
-# Configuration
-
-Add integration from autionation.
-
-# Automations
-
-Call service notify.smsalert and enter desired message.

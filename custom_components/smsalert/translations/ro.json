@@ -1,0 +1,25 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectează SMSAlert",
+        "description": "Introdu credențialele SMSAlert.",
+        "data": {
+          "username": "Utilizator",
+          "api_key": "Cheie API",
+          "cleanup_utf8": "Curăță UTF-8 (înlocuiește diacritice dacă e nevoie)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opțiuni SMSAlert",
+        "data": {
+          "cleanup_utf8": "Curăță UTF-8 (înlocuiește diacritice dacă e nevoie)"
+        }
+      }
+    }
+  }
+}

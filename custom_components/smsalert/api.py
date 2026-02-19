@@ -31,16 +31,10 @@ class SmsAlertApi:
     username: str
     api_key: str
 
-    async def async_send_sms(
-        self,
-        phone_number: str,
-        message: str,
-        cleanup_utf8: bool,
-    ) -> None:
-        """Send SMS via SMSAlert v2 endpoint."""
-        if not phone_number:
-            raise SmsAlertSendError("Missing phoneNumber")
-        if not message:
+    async def async_send_sms(self, phone_number: str, message: str, cleanup_utf8: bool) -> None:
+        if not phone_number or not phone_number.strip():
+            raise SmsAlertSendError("Missing phone_number")
+        if message is None or str(message) == "":
             raise SmsAlertSendError("Missing message")
 
         url = f"{BASE_API_URL}{SEND_V2_PATH}"
@@ -49,9 +43,9 @@ class SmsAlertApi:
         payload = {
             "username": self.username,
             "apiKey": self.api_key,
-            "phoneNumber": phone_number,
+            "phoneNumber": phone_number.strip(),
             "message": message,
-            "cleanupUtf8": cleanup_utf8,
+            "cleanupUtf8": bool(cleanup_utf8),
         }
 
         try:

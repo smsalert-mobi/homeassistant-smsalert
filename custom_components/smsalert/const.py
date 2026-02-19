@@ -12,4 +12,6 @@ DEFAULT_CLEANUP_UTF8 = True
 BASE_API_URL = "https://smsalert.mobi"
 SEND_V2_PATH = "/api/v2/message/send"
 
+SERVICE_SEND = "send"
+
 TIMEOUT = 10

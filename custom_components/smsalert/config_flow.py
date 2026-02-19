@@ -26,7 +26,6 @@ class SmsAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(f"{DOMAIN}:{username}")
             self._abort_if_unique_id_configured()
 
-            # Put cleanup_utf8 in data (safe, and avoids update_entry in flow)
             return self.async_create_entry(
                 title=DEFAULT_NAME,
                 data={

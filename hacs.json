@@ -1,9 +1,12 @@
 {
   "name": "SMSAlert",
   "country": "RO",
-  "domains": ["notify"],
+  "domains": [
+    "smsalert"
+  ],
   "homeassistant": "2023.8.0",
   "render_readme": true,
-  "iot_class": ["Cloud Push"],
-  "filename": "manifest.json"
+  "iot_class": [
+    "Cloud Push"
+  ]
 }

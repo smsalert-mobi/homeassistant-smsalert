@@ -1,24 +1,23 @@
-smsalert:
-  name: SMSAlert
-  description: Send an SMS via SMSAlert (v2 API).
+send:
+  name: Send SMS
+  description: Send an SMS via SMSAlert.
   fields:
-    message:
+    phone_number:
+      name: Phone number
+      description: Destination phone number (E.164 format recommended).
       required: true
-      example: "Gate opened"
       selector:
         text:
-    target:
-      required: false
-      example: "+4072xxxxxxx"
+    message:
+      name: Message
+      description: SMS text to send.
+      required: true
       selector:
         text:
-    phoneNumber:
-      required: false
-      example: "+4072xxxxxxx"
-      selector:
-        text:
+          multiline: true
     cleanupUtf8:
+      name: Cleanup UTF-8
+      description: Override global cleanupUtf8 setting for this call.
       required: false
-      example: true
       selector:
         boolean:
