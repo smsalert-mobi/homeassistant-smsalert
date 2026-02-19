@@ -1,83 +1,107 @@
-"""SmsAlert platform for notify component."""
-from http import HTTPStatus
-import json
+from __future__ import annotations
+
 import logging
 
-from aiohttp.hdrs import CONTENT_TYPE
-import requests
-import voluptuous as vol
+from homeassistant.components.notify import NotifyEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 
-from homeassistant.components.notify import PLATFORM_SCHEMA, BaseNotificationService
-from homeassistant.const import (
+from .api import SmsAlertApi, SmsAlertError
+from .const import (
     CONF_API_KEY,
-    CONF_RECIPIENT,
-    CONF_SENDER,
+    CONF_CLEANUP_UTF8,
     CONF_USERNAME,
-    CONTENT_TYPE_JSON,
+    DEFAULT_CLEANUP_UTF8,
+    DEFAULT_NAME,
+    DOMAIN,
 )
-import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-BASE_API_URL = "https://smsalert.mobi"
-DEFAULT_SENDER = "hass"
-TIMEOUT = 5
 
-HEADERS = {CONTENT_TYPE: CONTENT_TYPE_JSON}
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities,
+) -> None:
+    data = entry.data
+    opts = entry.options
 
-
-PLATFORM_SCHEMA = vol.Schema(
-    vol.All(
-        PLATFORM_SCHEMA.extend(
-            {
-                vol.Required(CONF_USERNAME): cv.string,
-                vol.Required(CONF_API_KEY): cv.string,
-                vol.Required(CONF_RECIPIENT, default=[]): vol.All(
-                    cv.ensure_list, [cv.string]
-                ),
-                vol.Optional(CONF_SENDER, default=DEFAULT_SENDER): cv.string,
-            }
-        )
+    entity = SmsAlertNotifyEntity(
+        hass=hass,
+        name=entry.title or DEFAULT_NAME,
+        username=data[CONF_USERNAME],
+        api_key=data[CONF_API_KEY],
+        cleanup_utf8=opts.get(CONF_CLEANUP_UTF8, DEFAULT_CLEANUP_UTF8),
     )
-)
+    async_add_entities([entity], update_before_add=False)
 
 
-def get_service(hass, config, discovery_info=None):
-    """Get the SmsALert notification service."""
-    return SmsAlertNotificationService(config)
+class SmsAlertNotifyEntity(NotifyEntity):
+    """Notify entity for SMSAlert."""
 
+    _attr_has_entity_name = True
 
-class SmsAlertNotificationService(BaseNotificationService):
-    """Implementation of a notification service for the SmsAlert service."""
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        name: str,
+        username: str,
+        api_key: str,
+        cleanup_utf8: bool,
+    ) -> None:
+        self._attr_name = name
+        self._api = SmsAlertApi(hass=hass, username=username, api_key=api_key)
+        self._cleanup_utf8 = cleanup_utf8
 
-    def __init__(self, config):
-        """Initialize the service."""
-        self.username = config[CONF_USERNAME]
-        self.api_key = config[CONF_API_KEY]
-        self.recipients = config[CONF_RECIPIENT]
-        self.sender = config[CONF_SENDER]
+    async def async_send_message(self, message: str, **kwargs) -> None:
+        """
+        Send a notification message.
 
-    def send_message(self, message="", **kwargs):
-        """Send a message to a user."""
-        ploads = {
-	  'username' : self.username,
-          'apiKey' : self.api_key,
-          'tel' : ','.join(self.recipients),
-          'message': message
-	}
+        Expect exactly ONE destination provided by the automation.
 
-        api_url = f"{BASE_API_URL}/api/sms/sendBulk"
-        resp = requests.post(
-            api_url,
-            timeout=TIMEOUT,
-            data=ploads
-        )
-        if resp.status_code == HTTPStatus.OK:
+        Supported ways to pass the number:
+          1) target: "+40..."
+          2) target: ["+40..."]   (must be a single item)
+          3) data:
+               phoneNumber: "+40..."
+        """
+        phone_number = None
+
+        # Standard notify service supports "target"
+        target = kwargs.get("target")
+        if isinstance(target, str) and target.strip():
+            phone_number = target.strip()
+        elif isinstance(target, (list, tuple)):
+            targets = [str(x).strip() for x in target if str(x).strip()]
+            if len(targets) == 1:
+                phone_number = targets[0]
+            elif len(targets) > 1:
+                _LOGGER.error("SMSAlert: only one phone number is allowed per notification")
+                return
+
+        # Also allow data.phoneNumber
+        data = kwargs.get("data") or {}
+        if phone_number is None:
+            pn = data.get("phoneNumber") or data.get("phone_number")
+            if isinstance(pn, str) and pn.strip():
+                phone_number = pn.strip()
+
+        if not phone_number:
+            _LOGGER.error(
+                "SMSAlert: missing phone number. Provide `target: '+40...'` or `data: { phoneNumber: '+40...' }`"
+            )
             return
 
-        obj = json.loads(resp.text)
-        response_msg = obj.get("message")
-        response_code = obj.get("errorCode")
-        _LOGGER.error(
-            "Error %s : %s (Code %s)", resp.status_code, response_msg, response_code
-        )
+        # Allow per-call override of cleanupUtf8, but keep global default
+        cleanup_utf8 = data.get("cleanupUtf8", self._cleanup_utf8)
+        cleanup_utf8 = bool(cleanup_utf8)
+
+        try:
+            await self._api.async_send_sms(
+                phone_number=phone_number,
+                message=message,
+                cleanup_utf8=cleanup_utf8,
+            )
+        except SmsAlertError as err:
+            _LOGGER.error("Failed sending SMS via SMSAlert: %s", err)

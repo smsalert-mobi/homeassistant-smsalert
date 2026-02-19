@@ -1,0 +1,26 @@
+{
+  "title": "SMSAlert",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to SMSAlert",
+        "description": "Enter your SMSAlert credentials.",
+        "data": {
+          "username": "Username",
+          "api_key": "API key",
+          "cleanup_utf8": "Cleanup UTF-8 (replace special diacritics if needed)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "SMSAlert options",
+        "data": {
+          "cleanup_utf8": "Cleanup UTF-8 (replace special diacritics if needed)"
+        }
+      }
+    }
+  }
+}

@@ -5,13 +5,10 @@ Currently this is available only for users in Romania.
 
 In order to use this integration you nee to create an account on https://smsalert.mobi/ and get you security token from settings page.
 
-You can get up to 20 SMS for free per month.
-
-For more messages consider upgrading.
 
 # Install via HACS (recommended)
 
-Go to HACS -> custom repository (upper right corner) -> enter this repository URL https://github.com/axwell/homeassistant-smsalert -> ADD
+Go to HACS -> custom repository (upper right corner) -> enter this repository URL https://github.com/smsalert-mobi/homeassistant-smsalert -> ADD
 
 Click on "SMS Alert Notifications" -> Install this repository in HACS
 
@@ -30,7 +27,6 @@ notify:
     name: SMSAlert
     username: your_smsalert_username
     api_key: your_smsalert_token
-    recipient: +40XXXXXXXXX
 ```
 Restart home assistant
 

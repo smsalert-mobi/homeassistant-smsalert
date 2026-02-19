@@ -1,9 +1,13 @@
 {
   "domain": "smsalert",
-  "name": "SMS Alert Notifications",
+  "name": "SMSAlert",
   "documentation": "https://smsalert.mobi/apidocs",
-  "dependencies" : [],
+  "issue_tracker": "https://github.com/smsalert-mobi/homeassistant-smsalert/issues",
   "codeowners": ["@axwell"],
+  "config_flow": true,
+  "integration_type": "service",
+  "iot_class": "cloud_push",
+  "version": "2.1.0",
   "requirements": [],
-  "version": "1.0.1"
+  "dependencies": []
 }
