@@ -9,7 +9,7 @@
   "config_flow": true,
   "integration_type": "service",
   "iot_class": "cloud_push",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "requirements": [],
   "dependencies": []
 }

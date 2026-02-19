@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import logging
 from dataclasses import dataclass
 
@@ -18,11 +19,11 @@ class SmsAlertError(Exception):
 
 
 class SmsAlertAuthError(SmsAlertError):
-    """Auth/credential related error."""
+    """Authentication error."""
 
 
 class SmsAlertSendError(SmsAlertError):
-    """Send related error."""
+    """Send error."""
 
 
 @dataclass(slots=True)
@@ -31,38 +32,53 @@ class SmsAlertApi:
     username: str
     api_key: str
 
-    async def async_send_sms(self, phone_number: str, message: str, cleanup_utf8: bool) -> None:
-        if not phone_number or not phone_number.strip():
-            raise SmsAlertSendError("Missing phone_number")
-        if message is None or str(message) == "":
+    async def async_send_sms(
+        self,
+        phone_number: str,
+        message: str,
+        cleanup_utf8: bool,
+    ) -> None:
+
+        if not phone_number:
+            raise SmsAlertSendError("Missing phone number")
+
+        if not message:
             raise SmsAlertSendError("Missing message")
 
         url = f"{BASE_API_URL}{SEND_V2_PATH}"
         session = async_get_clientsession(self.hass)
 
+        # ✅ Proper Basic Auth header
+        token = f"{self.username}:{self.api_key}"
+        encoded = base64.b64encode(token.encode()).decode()
+
+        headers = {
+            "Authorization": f"Basic {encoded}",
+            "Content-Type": "application/json",
+        }
+
         payload = {
-            "username": self.username,
-            "apiKey": self.api_key,
-            "phoneNumber": phone_number.strip(),
+            "phoneNumber": phone_number,
             "message": message,
-            "cleanupUtf8": bool(cleanup_utf8),
+            "cleanupUtf8": cleanup_utf8,
         }
 
         try:
             async with asyncio.timeout(TIMEOUT):
-                resp = await session.post(url, json=payload)
-                text = await resp.text()
+                response = await session.post(url, json=payload, headers=headers)
+                text = await response.text()
         except TimeoutError as err:
-            raise SmsAlertSendError("Timeout calling SMSAlert") from err
+            raise SmsAlertSendError("Timeout calling SMSAlert API") from err
         except ClientError as err:
-            raise SmsAlertSendError("Network error calling SMSAlert") from err
+            raise SmsAlertSendError("Network error calling SMSAlert API") from err
 
-        if 200 <= resp.status < 300:
+        if 200 <= response.status < 300:
+            _LOGGER.debug("SMSAlert response: %s", text)
             return
 
-        _LOGGER.error("SMSAlert HTTP %s: %s", resp.status, text)
+        _LOGGER.error("SMSAlert API error %s: %s", response.status, text)
 
-        if resp.status in (401, 403):
+        if response.status in (401, 403):
             raise SmsAlertAuthError("Authentication failed")
 
-        raise SmsAlertSendError(f"HTTP {resp.status}")
+        raise SmsAlertSendError(f"HTTP {response.status}")
