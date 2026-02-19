@@ -19,16 +19,7 @@ Clone or copy the repository and copy the folder 'homeassistant-smsalert/custom_
 
 # Configuration
 
-Edit you home assistant configuration.yml and add:
-
-```yaml
-notify:
-  - platform: smsalert
-    name: SMSAlert
-    username: your_smsalert_username
-    api_key: your_smsalert_token
-```
-Restart home assistant
+Add integration from autionation.
 
 # Automations
 

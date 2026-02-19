@@ -1,0 +1,24 @@
+smsalert:
+  name: SMSAlert
+  description: Send an SMS via SMSAlert (v2 API).
+  fields:
+    message:
+      required: true
+      example: "Gate opened"
+      selector:
+        text:
+    target:
+      required: false
+      example: "+4072xxxxxxx"
+      selector:
+        text:
+    phoneNumber:
+      required: false
+      example: "+4072xxxxxxx"
+      selector:
+        text:
+    cleanupUtf8:
+      required: false
+      example: true
+      selector:
+        boolean:
